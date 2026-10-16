@@ -1,0 +1,14 @@
+export type TaskStatus = "Assigned" | "In progress" | "Submitted" | "Completed" | "Reopened" | "Under fix" | "Closed";
+export type BugStatus = "Reported" | "Verified" | "Under fix" | "Resolved" | "Closed" | "Rejected";
+export type ReviewStatus = "Pending" | "Approved" | "Exempt";
+export type Project = { id: string; name: string; client: string; description: string; progress: number; due: string; owner: string; ownerId?: string; modules: string[] };
+export type ModuleRecord = { id: string; projectId: string; name: string; due: string; completed?: string; status: "Assigned" | "In progress" | "Completed" | "Reopened" | "Under fix" | "Closed"; history: { status: string; date: string; actor: string }[] };
+export type Task = { id: string; title: string; module: string; projectId: string; assignee: string; assigneeId?: string; due: string; completed?: string; reopenedCount?: number; status: TaskStatus; priority: "High" | "Medium" | "Low"; description: string };
+export type Bug = { id: string; title: string; taskId: string; severity: "Critical" | "High" | "Medium" | "Low"; status: BugStatus; reported: string; resolved?: string; description: string; owner: string; ownerId?: string; review: ReviewStatus; reason?: string };
+export type TimeEntry = { id: string; taskId: string; bugId?: string; employee: string; employeeId?: string; date: string; hours: number; category: "Corrective" | "New work"; description: string; status: "Pending" | "Approved" | "Rejected" };
+export type Employee = { id: string; name: string; initials: string; role: string; department: string; rate: number; email: string; color: string };
+export type Notice = { id: string; title: string; body: string; date: string; read: boolean };
+export type Audit = { id: string; actor: string; action: string; subject: string; date: string };
+export type AppData = { projects: Project[]; modules?: ModuleRecord[]; tasks: Task[]; bugs: Bug[]; time: TimeEntry[]; employees: Employee[]; notices: Notice[]; audits: Audit[] };
+export type WorkspaceIdentity = { organisationId: string; organisationName: string; employeeId: string; userId: string; role: "owner" | "manager" | "team_lead" | "employee" | "payroll_admin" };
+export type PayrollProposal = { id: string; employeeId: string; timeEntryId: string; hours: number; hourlyRate: number; amount: number; status: string; workMonth: string; payrollMonth: string };
