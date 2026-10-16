@@ -8,7 +8,7 @@ import "@fontsource/manrope/800.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Vetra — Work, quality & payroll intelligence",
+  title: "ReworkIQ — Work, quality & payroll intelligence",
   description: "A connected workspace for delivery, corrective work, review and payroll clarity."
 };
 

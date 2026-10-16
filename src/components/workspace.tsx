@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pulse, Bell, Bug, ChartBar, CheckCircle, ClockCounterClockwise, Clock, Gear, House, List, MagnifyingGlass, Money, SquaresFour, Users, X, FileText, ShieldCheck, Receipt, SignOut } from "@phosphor-icons/react";
 import { StoreProvider, useStore } from "@/lib/store";
 import { createClient } from "@/lib/supabase/client";
@@ -33,6 +33,13 @@ const management = [
   { href: "/employees", label: "People", icon: Users },
   { href: "/audit-logs", label: "Audit trail", icon: ClockCounterClockwise }
 ];
+const roleNavigation: Record<string, string[]> = {
+  employee: ["/dashboard", "/tasks", "/bugs", "/time-logs", "/payslips"],
+  team_lead: ["/dashboard", "/projects", "/tasks", "/bugs", "/time-logs", "/approvals", "/analytics", "/audit-logs"],
+  manager: ["/dashboard", "/projects", "/tasks", "/bugs", "/time-logs", "/approvals", "/payroll", "/payslips", "/analytics", "/employees", "/audit-logs"],
+  payroll_admin: ["/dashboard", "/projects", "/payroll", "/payslips", "/analytics", "/employees", "/audit-logs"],
+  owner: ["/dashboard", "/projects", "/tasks", "/bugs", "/time-logs", "/approvals", "/payroll", "/payslips", "/analytics", "/employees", "/audit-logs"]
+};
 
 function Shell({ section }: { section: string }) {
   const path = usePathname();
@@ -42,9 +49,23 @@ function Shell({ section }: { section: string }) {
   const [query, setQuery] = useState("");
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const unread = data.notices.filter(item => !item.read).length;
-  const canManage = mode === "demo" || ["owner", "manager", "team_lead"].includes(identity?.role ?? "");
-  const canPayroll = mode === "demo" || ["owner", "payroll_admin"].includes(identity?.role ?? "");
-  const nav = (items: typeof primary) => items.filter(item => item.href !== "/approvals" || canManage).filter(item => item.href !== "/payroll" || canPayroll).filter(item => item.href !== "/audit-logs" || canManage || canPayroll).map(item => <Link key={item.href} href={item.href} className={`nav-link ${path === item.href ? "active" : ""}`} onClick={() => setMobileOpen(false)}><item.icon size={19} weight={path === item.href ? "fill" : "regular"} /><span>{item.label}</span>{item.href === "/approvals" && <span className="nav-count">{data.time.filter(row => row.status === "Pending").length + data.bugs.filter(row => row.review === "Pending").length}</span>}</Link>);
+  const allowedNavigation = mode === "demo" ? roleNavigation.manager : roleNavigation[identity?.role ?? "employee"];
+  const nav = (items: typeof primary) => items.filter(item => allowedNavigation.includes(item.href)).map(item => <Link key={item.href} href={item.href} className={`nav-link ${path === item.href ? "active" : ""}`} onClick={() => setMobileOpen(false)}><item.icon size={19} weight={path === item.href ? "fill" : "regular"} /><span>{item.label}</span>{item.href === "/approvals" && <span className="nav-count">{data.time.filter(row => row.status === "Pending").length + data.bugs.filter(row => row.review === "Pending").length}</span>}</Link>);
+  const managementNav = (items: typeof management) => items.filter(item => allowedNavigation.includes(item.href)).map(item => <Link key={item.href} href={item.href} className={`nav-link ${path === item.href ? "active" : ""}`} onClick={() => setMobileOpen(false)}><item.icon size={19} weight={path === item.href ? "fill" : "regular"} /><span>{item.label}</span></Link>);
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setSearchOpen(true);
+      }
+      if (event.key === "Escape") {
+        setSearchOpen(false);
+        setNotificationsOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
   const page = {
     dashboard: <Dashboard />, projects: <Projects />, tasks: <Tasks />, bugs: <Bugs />, "time-logs": <TimeLogs />, approvals: <Approvals />, payroll: <Payroll />, payslips: <Payroll payslips />, analytics: <Analytics />, employees: <People />, organisation: <People organisation />, "audit-logs": <Records />, notifications: <Records notifications />, settings: <Records settings />
   }[section] ?? <Dashboard />;
@@ -59,17 +80,17 @@ function Shell({ section }: { section: string }) {
     <div className="ambient ambient-a" /><div className="ambient ambient-b" /><div className="ambient ambient-c" />
     {mobileOpen && <button className="mobile-scrim" aria-label="Close menu" onClick={() => setMobileOpen(false)} />}
     <aside className={`sidebar glass ${mobileOpen ? "sidebar-open" : ""}`}>
-      <Link href="/dashboard" className="brand"><span className="brand-symbol"><Pulse size={25} weight="bold" /></span><span>vetra<span className="brand-period">.</span><small>WORK INTELLIGENCE</small></span></Link>
+      <Link href="/dashboard" className="brand"><span className="brand-symbol"><Pulse size={25} weight="bold" /></span><span>ReworkIQ<span className="brand-period">.</span><small>WORK INTELLIGENCE</small></span></Link>
       <div className="workspace-switch"><span className="workspace-logo">{identity?.organisationName[0] ?? "N"}</span><span><strong>{identity?.organisationName ?? "Northstar Digital"}</strong><small>{mode === "demo" ? "Enterprise workspace" : `${identity?.role.replaceAll("_", " ")} workspace`}</small></span><span className="switch-chevron">⌄</span></div>
       <div className="nav-group-label">WORKSPACE</div><nav>{nav(primary)}</nav>
-      <div className="nav-group-label management-label">MANAGEMENT</div><nav>{nav(management)}</nav>
-      <div className="sidebar-bottom">{mode === "demo" && <div className="demo-note"><span className="demo-pulse" /><strong>Frontend preview</strong><p>Explore the product with sample data. Changes stay in this browser.</p></div>}<Link href="/settings" className={`nav-link ${path === "/settings" ? "active" : ""}`}><Gear size={19} /> <span>Settings</span></Link><div className="profile"><span className="profile-avatar">{mode === "demo" ? "PN" : data.employees.find(person => person.id === identity?.employeeId)?.initials ?? "ME"}</span><span><strong>{mode === "demo" ? "Priya Nair" : data.employees.find(person => person.id === identity?.employeeId)?.name ?? "My account"}</strong><small>{mode === "demo" ? "Workspace manager" : identity?.role.replaceAll("_", " ")}</small></span>{mode === "live" ? <button className="icon-button" aria-label="Sign out" onClick={async () => { await createClient().auth.signOut(); window.location.assign("/login"); }}><SignOut size={18} /></button> : <span className="profile-ellipsis">···</span>}</div></div>
+      <div className="nav-group-label management-label">MANAGEMENT</div><nav>{managementNav(management)}</nav>
+      <div className="sidebar-bottom">{mode === "demo" && <div className="demo-note"><span className="demo-pulse" /><strong>Frontend preview</strong><p>Explore ReworkIQ with sample data. Changes stay in this browser.</p></div>}<Link href="/settings" className={`nav-link ${path === "/settings" ? "active" : ""}`} onClick={() => setMobileOpen(false)}><Gear size={19} /> <span>Settings</span></Link><div className="profile"><span className="profile-avatar">{mode === "demo" ? "PN" : data.employees.find(person => person.id === identity?.employeeId)?.initials ?? "ME"}</span><span><strong>{mode === "demo" ? "Priya Nair" : data.employees.find(person => person.id === identity?.employeeId)?.name ?? "My account"}</strong><small>{mode === "demo" ? "Workspace manager" : identity?.role.replaceAll("_", " ")}</small></span>{mode === "live" ? <button className="icon-button" aria-label="Sign out" onClick={async () => { await createClient().auth.signOut(); window.location.assign("/login"); }}><SignOut size={18} /></button> : <span className="profile-ellipsis">···</span>}</div></div>
     </aside>
-    <div className="main-shell"><header className="topbar glass"><button className="icon-button mobile-menu" onClick={() => setMobileOpen(true)} aria-label="Open menu"><List size={22} /></button><div className="breadcrumb"><span>Workspace</span><span className="breadcrumb-separator">/</span><strong>{[...primary, ...management].find(item => item.href === path)?.label ?? section.replaceAll("-", " ")}</strong></div><div className="topbar-actions"><button className="search-trigger" onClick={() => setSearchOpen(true)}><MagnifyingGlass size={17} /><span>Search anything...</span><kbd>⌘ K</kbd></button><span className="topbar-divider" /><button className="icon-button notification-button" onClick={() => setNotificationsOpen(!notificationsOpen)} aria-label="Notifications"><Bell size={20} />{unread > 0 && <i />}</button><span className="top-avatar">PN</span></div></header>
-      {notificationsOpen && <div className="notification-popover glass"><div className="popover-head"><strong>Notifications</strong><Link href="/notifications" onClick={() => setNotificationsOpen(false)}>View all</Link></div>{data.notices.slice(0, 3).map(item => <div className="notice-mini" key={item.id}><span className={item.read ? "notice-dot read" : "notice-dot"} /><div><strong>{item.title}</strong><p>{item.body}</p><small>{item.date}</small></div></div>)}</div>}
-      <main className="content">{error && <div className="global-error" role="alert"><span>{error}</span><button onClick={clearError}>Dismiss</button></div>}{page}<footer className="site-footer"><span>{mode === "demo" ? "Vetra workspace preview" : identity?.organisationName}</span><span>Designed for clearer work, quality and pay decisions.</span></footer></main>
+    <div className="main-shell"><header className="topbar glass"><button className="icon-button mobile-menu" onClick={() => setMobileOpen(true)} aria-label="Open menu" aria-expanded={mobileOpen}><List size={22} /></button><div className="breadcrumb"><span>Workspace</span><span className="breadcrumb-separator">/</span><strong>{[...primary, ...management].find(item => item.href === path)?.label ?? (section === "organisation" ? "Organisation" : section.replaceAll("-", " "))}</strong></div><div className="topbar-actions"><button className="search-trigger" onClick={() => setSearchOpen(true)} aria-label="Search projects, tasks or bugs"><MagnifyingGlass size={17} /><span>Search anything...</span><kbd>⌘ K</kbd></button><span className="topbar-divider" /><button className="icon-button notification-button" onClick={() => setNotificationsOpen(!notificationsOpen)} aria-label="Notifications" aria-expanded={notificationsOpen}><Bell size={20} />{unread > 0 && <i />}</button><span className="top-avatar" aria-hidden="true">PN</span></div></header>
+      {notificationsOpen && <div className="notification-popover glass" role="region" aria-label="Notifications"><div className="popover-head"><strong>Notifications</strong><Link href="/notifications" onClick={() => setNotificationsOpen(false)}>View all</Link></div>{data.notices.slice(0, 3).map(item => <div className="notice-mini" key={item.id}><span className={item.read ? "notice-dot read" : "notice-dot"} /><div><strong>{item.title}</strong><p>{item.body}</p><small>{item.date}</small></div></div>)}</div>}
+      <main className="content">{error && <div className="global-error" role="alert"><span>{error}</span><button onClick={clearError}>Dismiss</button></div>}{page}<footer className="site-footer"><span>{mode === "demo" ? "ReworkIQ workspace preview" : identity?.organisationName}</span><span>Designed for clearer work, quality and pay decisions.</span></footer></main>
     </div>
-    {searchOpen && <div className="search-overlay" onMouseDown={() => setSearchOpen(false)}><div className="search-dialog glass" onMouseDown={e => e.stopPropagation()}><div className="search-input-row"><MagnifyingGlass size={20} /><input autoFocus placeholder="Search projects, tasks or bugs" value={query} onChange={e => setQuery(e.target.value)} /><button className="icon-button" onClick={() => setSearchOpen(false)} aria-label="Close search"><X size={20} /></button></div><div className="search-list">{searchResults.length ? searchResults.map(item => <Link key={item.detail} href={item.href} onClick={() => setSearchOpen(false)}><span><FileText size={18} />{item.title}</span><Badge>{item.detail}</Badge></Link>) : <p>No matching items found.</p>}</div><div className="search-footer">Results from this demo workspace</div></div></div>}
+    {searchOpen && <div className="search-overlay" onMouseDown={() => setSearchOpen(false)}><div className="search-dialog glass" role="dialog" aria-modal="true" aria-label="Search workspace" onMouseDown={e => e.stopPropagation()}><div className="search-input-row"><MagnifyingGlass size={20} /><input autoFocus placeholder="Search projects, tasks or bugs" value={query} onChange={e => setQuery(e.target.value)} /><button className="icon-button" onClick={() => setSearchOpen(false)} aria-label="Close search"><X size={20} /></button></div><div className="search-list">{searchResults.length ? searchResults.map(item => <Link key={item.detail} href={item.href} onClick={() => setSearchOpen(false)}><span><FileText size={18} />{item.title}</span><Badge>{item.detail}</Badge></Link>) : <p>No matching items found.</p>}</div><div className="search-footer">Results from this {mode} workspace</div></div></div>}
   </div>;
 }
 
