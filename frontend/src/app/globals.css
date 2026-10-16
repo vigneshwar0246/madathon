@@ -16,5 +16,164 @@
 .portal-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:26px 0 0;max-width:620px}.portal-choice{display:grid;gap:4px;text-align:left;padding:13px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.035);color:var(--text);transition:border-color .2s,background .2s}.portal-choice:hover,.portal-choice.selected{border-color:rgba(140,228,201,.55);background:rgba(140,228,201,.09)}.portal-choice strong{font-size:12px}.portal-choice span{color:var(--muted);font-size:10px;line-height:1.35}.portal-choice small{display:flex;align-items:center;gap:4px;color:var(--mint);font-size:10px;font-weight:800;margin-top:3px}.portal-capabilities{display:grid;gap:5px;padding:0;margin:0 0 22px;list-style:none;color:var(--soft);font-size:11px}.portal-capabilities li:before{content:"✓";color:var(--mint);font-weight:800;margin-right:7px}.choose-another{display:block;width:100%;border:0;background:none;color:var(--mint);font-size:11px;font-weight:800;margin-top:16px}.portal-notice{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:25px 28px;border-radius:16px;background:linear-gradient(110deg,rgba(30,71,77,.78),rgba(20,52,64,.63));border-color:rgba(140,228,201,.17)}.portal-notice h2{font:800 21px Manrope,sans-serif;letter-spacing:-.7px;margin:8px 0}.portal-notice p{color:var(--soft);font-size:12px;margin:0;max-width:720px}.portal-notice>svg{color:var(--mint);flex:none}.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin:18px 0}.stat-card{display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:center;padding:18px;border-radius:13px}.stat-card svg{grid-row:span 2;color:var(--mint)}.stat-card span{color:var(--muted);font-size:11px}.stat-card strong{font:800 22px Manrope,sans-serif}.portal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.portal-panel{padding:22px;border-radius:15px}.panel-heading h2{font:800 18px Manrope,sans-serif;letter-spacing:-.5px;margin:7px 0 18px}.portal-links{display:grid;grid-template-columns:1fr 1fr;gap:8px}.portal-links a{display:flex;justify-content:space-between;align-items:center;padding:12px;border:1px solid var(--line);border-radius:9px;color:var(--soft);font-size:11px;font-weight:700}.portal-links a:hover{border-color:rgba(140,228,201,.4);color:var(--mint)}.portal-activity{display:grid;gap:13px}.portal-activity>div{display:grid;grid-template-columns:8px 1fr auto;gap:9px;align-items:start}.activity-dot{width:7px;height:7px;border-radius:50%;background:var(--mint);margin-top:5px}.portal-activity p{margin:0;color:var(--muted);font-size:11px}.portal-activity p strong{color:var(--soft)}.portal-activity small{color:#6f8993;font-size:10px;text-align:right}.onboarding-card>.brand-symbol{margin-bottom:24px}.onboarding-card h1{font:800 30px/1.2 Manrope,sans-serif;letter-spacing:-1px;margin:12px 0}.onboarding-card>p{color:var(--muted);font-size:12px;margin-bottom:26px}.jurisdiction-note{display:flex;gap:9px;align-items:center;background:rgba(140,228,201,.08);border:1px solid rgba(140,228,201,.15);border-radius:9px;padding:12px;color:#b9dccc;font-size:11px}.jurisdiction-note svg{flex:none;color:var(--mint)}
 @media(max-width:850px){.auth-layout{grid-template-columns:1fr;max-width:460px;gap:25px}.auth-story{min-height:unset;gap:35px;padding:5px}.auth-story h1{font-size:37px}.auth-story>small,.auth-proof{display:none}.auth-card{padding:28px}}
 .route-state{min-height:100dvh;display:grid;place-content:center;justify-items:center;gap:12px;padding:32px;text-align:center;background:radial-gradient(circle at 50% 0,#123642 0,transparent 38%),var(--bg);color:var(--text)}.route-state h1{font-family:Manrope,Arial,sans-serif;font-size:clamp(26px,4vw,40px);letter-spacing:-1.2px;margin:8px 0 0}.route-state p{max-width:480px;color:var(--muted);margin:0}.route-state-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:8px}
+
+/* The signed-in workspace uses the white/orange product system. Signup keeps its
+   separate blue onboarding treatment for the account-creation flow. */
+.app-frame,
+.workspace-loading,
+.route-state {
+  --bg: #fffaf5;
+  --panel: rgba(255, 255, 255, .92);
+  --panel-solid: #ffffff;
+  --line: #eee5dc;
+  --line-strong: #e7d7c7;
+  --text: #211b17;
+  --muted: #766d66;
+  --soft: #5d554f;
+  --mint: #f97316;
+  --mint-deep: #c2410c;
+  --coral: #ea580c;
+  --blue: #f97316;
+  --violet: #c2410c;
+  --shadow: 0 20px 55px rgba(124, 45, 18, .08);
+}
+.app-frame {
+  background: radial-gradient(circle at 90% 0, #ffedd5 0, transparent 28%), #fffaf5;
+}
+.app-frame .ambient-a { background: #fed7aa; }
+.app-frame .ambient-b { background: #ffedd5; }
+.app-frame .ambient-c { background: #fde68a; }
+.app-frame .glass {
+  background: rgba(255, 255, 255, .9);
+  border-color: var(--line);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8), var(--shadow);
+}
+.app-frame .sidebar,
+.app-frame .topbar {
+  background: rgba(255, 255, 255, .94);
+  border-color: var(--line);
+}
+.app-frame .brand-symbol,
+.app-frame .workspace-logo,
+.app-frame .organisation-mark {
+  background: linear-gradient(145deg, #fed7aa, #fb923c);
+  color: #7c2d12;
+}
+.app-frame .brand-period,
+.app-frame .eyebrow,
+.app-frame .hero-kicker,
+.app-frame .hero-link,
+.app-frame .text-link,
+.app-frame .hero-banner em,
+.app-frame .demo-pulse,
+.app-frame .nav-count,
+.app-frame .stat-card svg,
+.app-frame .portal-activity .activity-dot {
+  color: var(--mint);
+}
+.app-frame .brand small,
+.app-frame .nav-group-label,
+.app-frame .breadcrumb,
+.app-frame .workspace-switch small,
+.app-frame .profile small,
+.app-frame .page-heading p,
+.app-frame .stat-label,
+.app-frame .stat-detail,
+.app-frame .activity-row small,
+.app-frame .activity-row time {
+  color: var(--muted);
+}
+.app-frame .nav-link { color: #766d66; }
+.app-frame .nav-link:hover { background: #fff7ed; color: #9a3412; }
+.app-frame .nav-link.active {
+  background: #fff7ed;
+  color: #c2410c;
+  box-shadow: inset 3px 0 0 var(--mint);
+}
+.app-frame .workspace-switch,
+.app-frame .search-trigger,
+.app-frame .demo-note,
+.app-frame .portal-choice {
+  background: #fffaf5;
+  border-color: var(--line);
+}
+.app-frame .demo-note { background: #fff7ed; }
+.app-frame .topbar,
+.app-frame .breadcrumb strong,
+.app-frame .icon-button,
+.app-frame .search-trigger,
+.app-frame .button-ghost {
+  color: var(--text);
+}
+.app-frame .button-primary {
+  background: var(--mint);
+  color: #fff;
+  box-shadow: 0 8px 22px rgba(249, 115, 22, .18);
+}
+.app-frame .button-primary:hover { background: #ea580c; }
+.app-frame .button-secondary {
+  background: #fff7ed;
+  color: #c2410c;
+  border-color: #fed7aa;
+}
+.app-frame .button-ghost {
+  background: #fff;
+  border-color: var(--line);
+}
+.app-frame .hero-banner,
+.app-frame .portal-notice {
+  background: linear-gradient(110deg, #fff7ed, #ffedd5);
+  border-color: #fed7aa;
+}
+.app-frame .hero-banner:after { background: linear-gradient(110deg, transparent 57%, rgba(249, 115, 22, .08)); }
+.app-frame .hero-banner p,
+.app-frame .portal-notice p { color: var(--soft); }
+.app-frame .stat,
+.app-frame .stat-card,
+.app-frame .portal-panel,
+.app-frame .project-card,
+.app-frame .table-wrap,
+.app-frame .list-card,
+.app-frame .section-card {
+  background: #fff;
+  border-color: var(--line);
+}
+.app-frame .modal-backdrop,
+.app-frame .search-overlay { background: rgba(67, 35, 17, .22); }
+.app-frame .modal,
+.app-frame .search-dialog { background: #fff; color: var(--text); }
+.app-frame .empty { color: var(--text); }
+.app-frame .empty p { color: var(--muted); }
+.workspace-loading,
+.route-state {
+  background: #fffaf5;
+  color: var(--text);
+}
+.onboarding-page {
+  background: #fffaf5;
+  color: #211b17;
+}
+.onboarding-page .auth-glow {
+  background: radial-gradient(circle, rgba(249, 115, 22, .16), transparent 66%);
+}
+.onboarding-page .onboarding-card {
+  background: #fff;
+  border: 1px solid #eee5dc;
+  box-shadow: 0 24px 70px rgba(124, 45, 18, .1);
+}
+.onboarding-page .auth-card input,
+.onboarding-page .onboarding-card input {
+  background: #fff;
+  color: #211b17;
+  border-color: #e7d7c7;
+}
+.onboarding-page .auth-card label,
+.onboarding-page .onboarding-card label { color: #3f3f46; }
+.onboarding-page .onboarding-card > p { color: #766d66; }
+.onboarding-page .jurisdiction-note {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  color: #9a3412;
+}
 .payroll-actions{display:flex;gap:5px}.dispute-input{width:100%;border:1px solid var(--line-strong);background:rgba(3,19,29,.5);border-radius:8px;color:var(--text);padding:12px;resize:vertical}
 .module-list>div{flex-wrap:wrap}.module-lifecycle{flex-basis:100%;padding-left:40px;color:var(--muted);font-size:10px;line-height:1.5}.module-lifecycle span{display:block;margin-top:3px;color:#b8d5ce}

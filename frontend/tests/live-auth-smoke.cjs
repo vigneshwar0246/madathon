@@ -8,6 +8,8 @@ const { chromium } = require("playwright");
     await page.goto(process.env.TEST_BASE_URL || "http://localhost:3100");
     await page.waitForURL(/\/login$/, { timeout: 20000 });
     assert.equal(await page.getByRole("heading", { name: "Welcome back" }).count(), 1);
+    assert.equal(await page.getByRole("link", { name: "Create one" }).getAttribute("href"), "/signup");
+    assert.equal(await page.getByRole("button", { name: "Employee", exact: true }).getAttribute("aria-pressed"), "true");
     assert.equal(await page.getByText("Frontend preview").count(), 0);
     console.log("Live auth smoke passed: unsigned users reach sign in, not demo data.");
   } finally {

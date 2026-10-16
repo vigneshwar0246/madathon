@@ -11,6 +11,12 @@ const roles = [
   { name: "Manager", icon: UsersRound },
   { name: "Finance Admin", icon: CircleDollarSign }
 ];
+const roleForPortal: Record<string, string> = {
+  Employee: "employee",
+  "Team Lead": "team_lead",
+  Manager: "manager",
+  "Finance Admin": "payroll_admin"
+};
 
 export default function LoginPage() {
   const [identifier, setIdentifier] = useState("");
@@ -43,6 +49,10 @@ export default function LoginPage() {
       const bootstrap = await fetch("/api/bootstrap", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
       const body = await bootstrap.json();
       if (!bootstrap.ok) throw new Error(body.error ?? "Your workspace could not be loaded.");
+      if (body.identity?.role !== roleForPortal[role]) {
+        await createClient().auth.signOut();
+        throw new Error(`This account is not enabled for the ${role} portal. Select the portal assigned to this account.`);
+      }
       const destination = body.identity?.role === "team_lead" ? "/lead" : body.identity?.role === "employee" ? "/employee" : body.identity?.role === "manager" ? "/manager" : body.identity?.role === "payroll_admin" ? "/finance" : null;
       if (!destination) {
         await createClient().auth.signOut();
@@ -94,6 +104,7 @@ export default function LoginPage() {
           <button type="submit" className="sign-in-button" disabled={busy}>{busy ? "Checking access..." : "Sign In"}<ArrowRight size={17} /></button>
         </form>
         <div className="access-note"><span className="access-line" />Authorized access only<span className="access-line" /></div>
+        <p className="create-account-prompt">Need an account? <Link href="/signup">Create one</Link></p>
         <p className="version-label">Rework-Aware / Workspace Access</p>
       </div>
     </section>

@@ -7,11 +7,13 @@ import * as invite from "@backend/routes/employees/invite/route";
 import * as notifications from "@backend/routes/notifications/read/route";
 import * as organisations from "@backend/routes/organisations/route";
 import * as payroll from "@backend/routes/payroll/route";
+import * as payrollFinalise from "@backend/routes/payroll/finalise/route";
 import * as payrollRespond from "@backend/routes/payroll/respond/route";
 import * as projects from "@backend/routes/projects/route";
 import * as reviews from "@backend/routes/reviews/route";
 import * as tasks from "@backend/routes/tasks/route";
 import * as timeEntries from "@backend/routes/time-entries/route";
+import * as demoAccounts from "@backend/routes/demo-accounts/route";
 
 type RouteModule = Record<string, ((request: NextRequest) => Promise<Response>) | undefined>;
 
@@ -23,11 +25,13 @@ const routes: Record<string, RouteModule> = {
   "notifications/read": notifications,
   organisations,
   payroll,
+  "payroll/finalise": payrollFinalise,
   "payroll/respond": payrollRespond,
   projects,
   reviews,
   tasks,
   "time-entries": timeEntries
+  , "demo-accounts": demoAccounts
 };
 
 async function dispatch(request: NextRequest, path: string[], method: string) {
